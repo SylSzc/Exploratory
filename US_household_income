@@ -1,0 +1,171 @@
+# US Household Income Exploratory Data Analysis 
+
+
+SELECT * FROM portfolio.us_household_income;
+
+SELECT * FROM portfolio.us_household_income_statistics;
+
+
+SELECT State_Name, County, City, ALand, AWater 
+FROM us_household_income;
+
+-- Looking at states with the biggest land area
+
+SELECT State_Name,
+SUM(ALand), 
+SUM(AWater) 
+FROM us_household_income
+GROUP BY State_Name
+ORDER BY SUM(ALand) DESC;
+
+-- Looking at states with the most of lakes, streams, etc
+
+SELECT State_Name,
+SUM(ALand), 
+SUM(AWater) 
+FROM us_household_income
+GROUP BY State_Name
+ORDER BY SUM(AWater) DESC;
+
+-- Identifying top 10 the largest states by land area
+
+SELECT State_Name,
+  SUM(ALand), 
+  SUM(AWater) 
+FROM us_household_income
+GROUP BY State_Name
+ORDER BY SUM(ALand) DESC
+LIMIT 10;
+
+-- Identifying  top 10 the largest states by water area
+
+SELECT State_Name,
+  SUM(ALand), 
+  SUM(AWater) 
+FROM us_household_income
+GROUP BY State_Name
+ORDER BY SUM(AWater) DESC
+LIMIT 10;
+
+-- 
+
+
+SELECT * FROM portfolio.us_household_income;
+
+
+SELECT * 
+FROM us_household_income i
+INNER JOIN us_household_income_statistics s
+	ON  i.id = s.id 
+WHERE Mean <>0;
+
+SELECT i.State_Name, County, Type, `Primary`, Mean, Median
+FROM us_household_income i
+INNER JOIN us_household_income_statistics s
+	ON  i.id = s.id 
+WHERE Mean <>0;
+
+
+SELECT i.State_Name, County, Type, `Primary`, Mean, Median
+FROM us_household_income i
+INNER JOIN us_household_income_statistics s
+	ON  i.id = s.id 
+WHERE Mean <>0;
+
+-- Identifying bottom 5 states with the lowest average household income 
+
+SELECT i.State_Name, 
+  ROUND(AVG(Mean), 1),
+  ROUND(AVG(Median), 1)
+FROM us_household_income i
+INNER JOIN us_household_income_statistics s
+	ON  i.id = s.id
+WHERE Mean <>0
+GROUP BY i.State_Name
+ORDER BY 2 
+LIMIT 5;
+
+-- Identifying top 5 states with the highest average household income 
+
+SELECT i.State_Name, 
+  ROUND(AVG(Mean), 1),
+  ROUND(AVG(Median), 1)
+FROM us_household_income i
+INNER JOIN us_household_income_statistics s
+	ON  i.id = s.id
+WHERE Mean <>0
+GROUP BY i.State_Name
+ORDER BY 2 DESC
+LIMIT 5;
+
+-- Looking at different types of area
+
+SELECT i.Type,
+  COUNT(i.Type),
+  ROUND(AVG(Mean), 1),
+  ROUND(AVG(Median), 1)
+FROM us_household_income i
+INNER JOIN us_household_income_statistics s
+	ON  i.id = s.id
+WHERE Mean <>0
+GROUP BY i.Type
+ORDER BY 3 DESC
+LIMIT 20;
+
+SELECT i.Type,
+ROUND(AVG(Mean), 1),
+ROUND(AVG(Median), 1)
+FROM us_household_income i
+INNER JOIN us_household_income_statistics s
+	ON  i.id = s.id
+WHERE Mean <>0
+GROUP BY i.Type
+ORDER BY 3 DESC
+LIMIT 10;
+
+SELECT i.Type,
+  COUNT(i.Type),
+  ROUND(AVG(Mean), 1),
+  ROUND(AVG(Median), 1)
+FROM us_household_income i
+INNER JOIN us_household_income_statistics s
+	ON  i.id = s.id
+WHERE Mean <>0
+GROUP BY i.Type
+ORDER BY 4 DESC
+LIMIT 20;
+
+-- 
+
+SELECT *
+FROM us_household_income
+WHERE Type = 'Community' ;
+
+
+-- Filtering out the outliers 
+
+SELECT i.Type,
+  COUNT(i.Type),
+  ROUND(AVG(Mean), 1),
+  ROUND(AVG(Median), 1)
+FROM us_household_income i
+INNER JOIN us_household_income_statistics s
+	ON  i.id = s.id
+WHERE Mean <>0
+GROUP BY i.Type
+  HAVING COUNT(i.Type) > 100
+ORDER BY 4 DESC
+LIMIT 20;
+
+
+-- Looking at average household income by state and city
+
+SELECT i. State_Name, 
+  i.City,
+  ROUND(AVG(Mean), 1),
+  ROUND(AVG(Median), 1)
+FROM us_household_income i
+JOIN us_household_income_statistics s 
+	ON i.id = s.id 
+GROUP BY i. State_Name, i.City
+ORDER BY ROUND(AVG(Mean), 1) DESC; 
